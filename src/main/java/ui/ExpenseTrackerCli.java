@@ -4,30 +4,40 @@ import persistence.ExpenseTrackerFileManagement;
 
 public class ExpenseTrackerCli {
 
-    ExpenseTrackerFileManagement fileManagement;
+    private final ExpenseTrackerFileManagement fileManagement;
+
 
     static void main(String[] args) {
+        if (args.length == 0) {
+            System.out.println("Por favor, insira uma opção [add, list, summary, delete]");
+            return;
+        }
         ExpenseTrackerCli expenseCli = new ExpenseTrackerCli();
         expenseCli.doAction(args);
     }
 
     ExpenseTrackerCli() {
-        String fileName = "C:\\expenseTracker\\expense.csv";
-        fileManagement = new ExpenseTrackerFileManagement(fileName);
+        final String filename ="C:\\expenseTracker\\expense.csv";
+        fileManagement = new ExpenseTrackerFileManagement(filename);
     }
 
     private void doAction(String[] args) {
         String option = args[0].toLowerCase();
+
+        if (!checkArgs(option, args)) {
+            return;
+        }
+
         switch (option) {
             case "add":
-                if(checkArgs(option, args)) {
-                    System.out.println("Argumentos corretos para adicionar");
-                }
-                System.out.println("Adicionando uma despesa");
-                fileManagement.add();
+                System.out.println("Adicionando uma despesa...");
+                String description = getValue(args, "--description");
+                String amount = getValue(args, "--amount");
+                fileManagement.add(description, amount);
                 break;
             case "list":
                 System.out.println("Listando todas as despesas");
+                fileManagement.listExpenses();
                 break;
             case "summary":
                 System.out.println("Mostrando valor total das despesas");
@@ -35,19 +45,15 @@ public class ExpenseTrackerCli {
             case "delete":
                 System.out.println("Deletando uma despesa");
                 break;
-            default:
-                System.out.println("A opção " + option + " é inválida." );
-                System.out.println("Por favor ensira um valor válido [add, list, summary, delete]");
         }
     }
 
     private boolean checkArgs(String option, String[] args) {
         switch (option) {
             case "add":
-                return isQuantityValid(args, 5) || areValuesValid(args);
+                return isQuantityValid(args, 5) && areValuesValid(args);
             case "list":
-                System.out.println("Logica para list");
-                break;
+                return isQuantityValid(args, 1);
             case "summary":
                 System.out.println("Logia para summary");
                 break;
@@ -55,7 +61,7 @@ public class ExpenseTrackerCli {
                 System.out.println("Logia capara delete");
                 break;
             default:
-                System.out.println("Opção inválida");
+                System.out.println("Insira um parametro válido: [add, list, summary, delete]");
                 break;
         }
         return false;
@@ -100,6 +106,4 @@ public class ExpenseTrackerCli {
         }
         return null;
     }
-
-
 }
