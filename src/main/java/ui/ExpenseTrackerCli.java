@@ -6,7 +6,6 @@ public class ExpenseTrackerCli {
 
     private final ExpenseTrackerFileManagement fileManagement;
 
-
     static void main(String[] args) {
         if (args.length == 0) {
             System.out.println("Por favor, insira uma opção [add, list, summary, delete]");

@@ -15,7 +15,7 @@ public class ExpenseTrackerFileManagement {
     }
 
     public void add(String description, String amount) {
-        if(!haveHeader()) manageFirstLine();
+        if(!haveHeader()) addHeader();
         try {
             Expense exp = new Expense(description, Double.parseDouble(amount));
             BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME, true));
@@ -26,10 +26,6 @@ public class ExpenseTrackerFileManagement {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void manageFirstLine() {
-        System.out.println("Tratando arquivo...");
     }
 
     private boolean haveHeader() {
@@ -43,6 +39,32 @@ public class ExpenseTrackerFileManagement {
             return reader.readLine();
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    private void addHeader() {
+        System.out.println("Tratando arquivo...");
+        List<Expense> expenses = getExpenseList();
+        clearFile();
+        try{
+            BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME, true));
+            buffer.write("ID;DATE;DESCRIPTION;AMOUNT\n");
+            for(Expense expense: expenses) {
+                buffer.write(expense.toCsv());
+            }
+            buffer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void clearFile() {
+        try {
+            BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME));
+            buffer.write("");
+            buffer.close();
+        } catch (IOException e) {
+            System.out.println("Nao foi possivel limpar o arquivo");
         }
     }
 

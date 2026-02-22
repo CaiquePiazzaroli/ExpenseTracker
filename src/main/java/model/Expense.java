@@ -24,16 +24,17 @@ public class Expense {
     }
 
     public String toCsv() {
-        return String.format("0;%s;%s;%s\n", LocalDate.now(), this.description, this.amount);
+        return String.format("0,%s,%s,%s\n", LocalDate.now(), this.description, this.amount);
     }
 
     public static  Expense fromCsv(String csvLine) {
-        List<String> line = List.of(csvLine.split(";"));
+        List<String> line = List.of(csvLine.split(","));;
         try {
             int id = Integer.parseInt(line.get(0));
             LocalDate date = LocalDate.parse(line.get(1));
             String description = line.get(2).trim();
             double amount = Double.parseDouble(line.get(3));
+
             return new Expense(id, date, description, amount);
         } catch (NumberFormatException e) {
             System.out.println("Id ou quantidade inválidos");
@@ -50,37 +51,5 @@ public class Expense {
     @Override
     public String toString() {
         return "#  " + id + "   " + date + "   " + description + "   " +  "R$" + amount;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
     }
 }
