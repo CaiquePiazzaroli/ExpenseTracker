@@ -9,94 +9,80 @@ import java.util.List;
 public class ExpenseTrackerFileManagement {
 
     private final String FILE_NAME;
+    private final String FILE_HEADER = "ID,DATE,DESCRIPTION,AMOUNT\n";
 
     public ExpenseTrackerFileManagement(String FILE_NAME) {
         this.FILE_NAME = FILE_NAME;
     }
 
     public void add(String description, String amount) {
-        if(!haveHeader()) addHeader();
         try {
-            Expense exp = new Expense(description, Double.parseDouble(amount));
-            BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME, true));
-            buffer.write(exp.toCsv());
-            buffer.close();
-        }catch (NumberFormatException e ) {
-            System.out.println(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+            int nextId = getLastId() + 1;
+            Expense exp = new Expense(nextId, description, Double.parseDouble(amount));
 
-    private boolean haveHeader() {
-        String firstLine = getFirstLine();
-        return firstLine != null && firstLine.equals("ID;DATE;DESCRIPTION;AMOUNT");
-    }
-
-    private String getFirstLine() {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
-            return reader.readLine();
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private void addHeader() {
-        System.out.println("Tratando arquivo...");
-        List<Expense> expenses = getExpenseList();
-        clearFile();
-        try{
-            BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME, true));
-            buffer.write("ID;DATE;DESCRIPTION;AMOUNT\n");
-            for(Expense expense: expenses) {
-                buffer.write(expense.toCsv());
+            try(BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+                buffer.write(exp.toCsv());
             }
-            buffer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        } catch (NumberFormatException | IOException e ) {
+            System.out.println("Erro ao Salvar: " + e);
         }
     }
 
-    private void clearFile() {
-        try {
-            BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME));
-            buffer.write("");
-            buffer.close();
-        } catch (IOException e) {
-            System.out.println("Nao foi possivel limpar o arquivo");
-        }
-    }
-
-    public void listExpenses() {
-        if(getExpenseList().isEmpty()) {
+    public void list() {
+        List<Expense> expenses = getExpenseList();
+        if (expenses.isEmpty()) {
             System.out.println("Lista vazia");
         } else {
             System.out.println("   ID  DATE         DESCRIPTION             AMOUNT");
-            getExpenseList().forEach(expense -> System.out.println(expense.toString()));
+            expenses.forEach(System.out::println);
         }
+    }
+
+    private int getLastId() {
+        return getExpenseList().stream()
+                .mapToInt(Expense::getId)
+                .max()
+                .orElse(0);
     }
 
     public List<Expense> getExpenseList() {
         List<Expense> expenseList = new ArrayList<>();
-
         try {
-            BufferedReader buffer = new BufferedReader(new FileReader(this.FILE_NAME));
-            String line;
-            while (true) {
-                line = buffer.readLine();
-                if(line == null) break;
-                if(Expense.fromCsv(line) != null) {
-                    expenseList.add(Expense.fromCsv(line));
+            ensureFileExists();
+
+            try (BufferedReader buffer = new BufferedReader(new FileReader(this.FILE_NAME))) {
+                String line;
+                while ((line = buffer.readLine()) != null) {
+                    if (line.equalsIgnoreCase(FILE_HEADER.trim())) continue;
+                    Expense expense = Expense.fromCsv(line);
+                    if (expense != null) {
+                        expenseList.add(expense);
+                    }
                 }
+
             }
-        } catch (FileNotFoundException e ) {
-            System.out.println(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Falha crítica ao carregar despesas: " + e.getMessage());
         }
 
         return expenseList;
     }
 
+    public void ensureFileExists() throws IOException {
+        File file = new File(this.FILE_NAME);
+        File parentDir = file.getParentFile();
+
+        if (parentDir != null && !parentDir.exists()) {
+            if (!parentDir.mkdirs()) {
+                throw new IOException("Não foi possível criar o diretório: " + parentDir.getAbsolutePath());
+            }
+        }
+
+        if (!file.exists()) {
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(FILE_HEADER);
+            }
+        }
+    }
 }

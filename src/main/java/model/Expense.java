@@ -6,12 +6,18 @@ import java.util.List;
 
 public class Expense {
 
-    private int id;
-    private LocalDate date;
-    private String description;
-    private double amount;
+    private int id = 0;
+    private LocalDate date = LocalDate.now();
+    private final String description;
+    private final double amount;
 
     public Expense(String description, double amount) {
+        this.description = description;
+        this.amount = amount;
+    }
+
+    public Expense(int id, String description, double amount) {
+        this.id = id;
         this.description = description;
         this.amount = amount;
     }
@@ -24,11 +30,11 @@ public class Expense {
     }
 
     public String toCsv() {
-        return String.format("0,%s,%s,%s\n", LocalDate.now(), this.description, this.amount);
+        return String.format("%d,%s,%s,%s\n", this.id, this.date, this.description, this.amount);
     }
 
     public static  Expense fromCsv(String csvLine) {
-        List<String> line = List.of(csvLine.split(","));;
+        List<String> line = List.of(csvLine.split(","));
         try {
             int id = Integer.parseInt(line.get(0));
             LocalDate date = LocalDate.parse(line.get(1));
@@ -37,7 +43,7 @@ public class Expense {
 
             return new Expense(id, date, description, amount);
         } catch (NumberFormatException e) {
-            System.out.println("Id ou quantidade inválidos");
+            System.out.println("Id ou quantidade inválidos: " + csvLine);
             return null;
         } catch (DateTimeException e) {
             System.out.println("Data inválida");
@@ -46,6 +52,10 @@ public class Expense {
             System.out.println("Argumentos não foram passados corretamente!");
             return null;
         }
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override

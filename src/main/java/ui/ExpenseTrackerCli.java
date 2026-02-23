@@ -36,7 +36,7 @@ public class ExpenseTrackerCli {
                 break;
             case "list":
                 System.out.println("Listando todas as despesas");
-                fileManagement.listExpenses();
+                fileManagement.list();
                 break;
             case "summary":
                 System.out.println("Mostrando valor total das despesas");
