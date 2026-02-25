@@ -48,7 +48,10 @@ public class ExpenseTrackerCli {
                 }
                 break;
             case "delete":
-                System.out.println("Deletando uma despesa");
+                String id = getValue(args, "--id");
+                if(id != null) {
+                    fileManagement.delete(Integer.parseInt(id));
+                }
                 break;
         }
     }
@@ -65,8 +68,7 @@ public class ExpenseTrackerCli {
                 }
                 return isQuantityValid(args, 1);
             case "delete":
-                System.out.println("Logica para delete");
-                break;
+                return isQuantityValid(args, 3) && areValueValid(args, "--id");
             default:
                 System.out.println("Insira um parametro válido: [add, list, summary, delete]");
                 break;
@@ -92,7 +94,8 @@ public class ExpenseTrackerCli {
 
         return switch (flag) {
             case "--month" -> isMonthValid(value);
-            case "--amount" -> isInteger(value);
+            case "--amount" -> idDouble(value);
+            case "--id" -> isInteger(value);
             case "--description" -> true;
             default -> {
                 System.out.println("flag invalida");
@@ -118,9 +121,20 @@ public class ExpenseTrackerCli {
     private boolean isInteger(String parseableValue) {
         try {
             Integer.parseInt(parseableValue);
+            Double.parseDouble(parseableValue);
             return true;
         } catch (NumberFormatException e) {
-            System.out.println("Erro: O valor de --amount deve ser um número.");
+            System.out.println("Erro: O valor de --amount deve ser um número Inteiro.");
+            return false;
+        }
+    }
+
+    private boolean idDouble(String parseableValue) {
+        try {
+            Double.parseDouble(parseableValue);
+            return true;
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: O valor de --amount deve ser um número de Ponto Flutuante.");
             return false;
         }
     }

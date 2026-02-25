@@ -40,6 +40,33 @@ public class ExpenseTrackerFileManagement {
         }
     }
 
+    public void delete(int id) {
+        List<Expense> expenses = getExpenseList();
+
+        boolean found = expenses.removeIf(expense -> expense.getId() == id);
+
+        if (found) {
+            rewriteDatabase(expenses);
+            System.out.printf("Id %d excluido da base de dados com exito!\n", id);
+        } else {
+            System.out.printf("O id %d não foi encontrado na base de dados.\n", id);
+        }
+    }
+
+    public void rewriteDatabase(List<Expense> expensesList) {
+        try {
+            ensureFileExists();
+
+            try (BufferedWriter buffer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+                for(Expense exp: expensesList) {
+                    buffer.write(exp.toCsv());
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void getGeneralSummary() {
         List<Expense> expenses = getExpenseList();
         double summary = 0.0;
