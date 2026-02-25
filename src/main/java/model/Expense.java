@@ -4,6 +4,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.List;
 
+
 public class Expense {
 
     private int id = 0;
@@ -56,6 +57,14 @@ public class Expense {
 
     public int getId() {
         return id;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public LocalDate getDate() {
+        return date;
     }
 
     @Override

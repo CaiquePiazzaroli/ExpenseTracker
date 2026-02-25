@@ -5,6 +5,7 @@ import model.Expense;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Month;
 
 public class ExpenseTrackerFileManagement {
 
@@ -37,6 +38,26 @@ public class ExpenseTrackerFileManagement {
             System.out.println("   ID  DATE         DESCRIPTION             AMOUNT");
             expenses.forEach(System.out::println);
         }
+    }
+
+    public void getGeneralSummary() {
+        List<Expense> expenses = getExpenseList();
+        double summary = 0.0;
+        for(Expense exp : expenses) {
+            summary += exp.getAmount();
+        }
+        System.out.println("# Total expenses: " + "R$" + summary);
+    }
+
+    public void getMonthSummary(int monthNumber) {
+        List<Expense> expenses = getExpenseList();
+        double summary = 0.0;
+        for(Expense exp : expenses) {
+            if(exp.getDate().getMonthValue() == monthNumber) {
+                summary += exp.getAmount();
+            }
+        }
+        System.out.printf("# Total expenses for %s: R$%.2f", Month.of(monthNumber), summary);
     }
 
     private int getLastId() {

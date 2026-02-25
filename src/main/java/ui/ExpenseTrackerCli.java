@@ -40,6 +40,12 @@ public class ExpenseTrackerCli {
                 break;
             case "summary":
                 System.out.println("Mostrando valor total das despesas");
+                String month = getValue(args, "--month");
+                if(args.length > 1 && month != null) {
+                    fileManagement.getMonthSummary(Integer.parseInt(month));
+                } else {
+                    fileManagement.getGeneralSummary();
+                }
                 break;
             case "delete":
                 System.out.println("Deletando uma despesa");
@@ -50,14 +56,16 @@ public class ExpenseTrackerCli {
     private boolean checkArgs(String option, String[] args) {
         switch (option) {
             case "add":
-                return isQuantityValid(args, 5) && areValuesValid(args);
+                return isQuantityValid(args, 5) && areValueValid(args, "--description") && areValueValid(args, "--amount");
             case "list":
                 return isQuantityValid(args, 1);
             case "summary":
-                System.out.println("Logia para summary");
-                break;
+                if(args.length > 1) {
+                    return isQuantityValid(args, 3) && areValueValid(args,"--month");
+                }
+                return isQuantityValid(args, 1);
             case "delete":
-                System.out.println("Logia capara delete");
+                System.out.println("Logica para delete");
                 break;
             default:
                 System.out.println("Insira um parametro válido: [add, list, summary, delete]");
@@ -74,22 +82,42 @@ public class ExpenseTrackerCli {
         return true;
     }
 
-    private boolean areValuesValid(String[] args) {
-        String desc = getValue(args, "--description");
-        String amountStr = getValue(args, "--amount");
+    private boolean areValueValid(String[] args, String flag) {
+        String value = getValue(args, flag);
 
-        if (desc == null || desc.isEmpty()) {
-            System.out.println("Erro: --description ausente ou sem valor.");
+        if (value == null || value.isEmpty()) {
+            System.out.printf("Erro: %s ausente ou sem valor.%n", flag);
             return false;
         }
 
-        if (amountStr == null) {
-            System.out.println("Erro: --amount ausente ou sem valor.");
-            return false;
-        }
+        return switch (flag) {
+            case "--month" -> isMonthValid(value);
+            case "--amount" -> isInteger(value);
+            case "--description" -> true;
+            default -> {
+                System.out.println("flag invalida");
+                yield false;
+            }
+        };
+    }
 
+    private boolean isMonthValid(String value) {
+        if(isInteger(value)) {
+            boolean isAValidMonth = (Integer.parseInt(value) >= 1 && Integer.parseInt(value) <= 12);
+
+            if(!isAValidMonth) {
+                System.out.println("Valor Inválido para mês. Digite um numero entre 1 e 12");
+                return false;
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isInteger(String parseableValue) {
         try {
-            Integer.parseInt(amountStr);
+            Integer.parseInt(parseableValue);
             return true;
         } catch (NumberFormatException e) {
             System.out.println("Erro: O valor de --amount deve ser um número.");
