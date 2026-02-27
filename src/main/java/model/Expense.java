@@ -44,13 +44,13 @@ public class Expense {
 
             return new Expense(id, date, description, amount);
         } catch (NumberFormatException e) {
-            System.out.println("Id ou quantidade inválidos: " + csvLine);
+            System.out.println("Invalid ID or quantity: " + csvLine);
             return null;
         } catch (DateTimeException e) {
-            System.out.println("Data inválida");
+            System.out.println("Invalid Date");
             return null;
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Argumentos não foram passados corretamente!");
+            System.out.println("The arguments were not presented correctly!");
             return null;
         }
     }

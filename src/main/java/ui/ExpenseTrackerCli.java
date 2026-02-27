@@ -8,7 +8,7 @@ public class ExpenseTrackerCli {
 
     static void main(String[] args) {
         if (args.length == 0) {
-            System.out.println("Por favor, insira uma opção [add, list, summary, delete]");
+            System.out.println("Please, insert a valid option [add, list, summary, delete]");
             return;
         }
         ExpenseTrackerCli expenseCli = new ExpenseTrackerCli();
@@ -29,17 +29,17 @@ public class ExpenseTrackerCli {
 
         switch (option) {
             case "add":
-                System.out.println("Adicionando uma despesa...");
+                System.out.println("Adding a new Expense...");
                 String description = getValue(args, "--description");
                 String amount = getValue(args, "--amount");
                 fileManagement.add(description, amount);
                 break;
             case "list":
-                System.out.println("Listando todas as despesas");
+                System.out.println("Listing Expense...");
                 fileManagement.list();
                 break;
             case "summary":
-                System.out.println("Mostrando valor total das despesas");
+                System.out.println("Summary Expense");
                 String month = getValue(args, "--month");
                 if(args.length > 1 && month != null) {
                     fileManagement.getMonthSummary(Integer.parseInt(month));
@@ -70,7 +70,7 @@ public class ExpenseTrackerCli {
             case "delete":
                 return isQuantityValid(args, 3) && areValueValid(args, "--id");
             default:
-                System.out.println("Insira um parametro válido: [add, list, summary, delete]");
+                System.out.println("Insert a valid option: [add, list, summary, delete]");
                 break;
         }
         return false;
@@ -78,7 +78,7 @@ public class ExpenseTrackerCli {
 
     private boolean isQuantityValid(String[] args, int minLength) {
         if (args == null || args.length < minLength) {
-            System.out.println("Erro: Faltam argumentos. Mínimo esperado: " + minLength);
+            System.out.println("Error: There's a lack of arguments. Minimum expected.: " + minLength);
             return false;
         }
         return true;
@@ -88,7 +88,7 @@ public class ExpenseTrackerCli {
         String value = getValue(args, flag);
 
         if (value == null || value.isEmpty()) {
-            System.out.printf("Erro: %s ausente ou sem valor.%n", flag);
+            System.out.printf("Error: %s not exists os is na null value.", flag);
             return false;
         }
 
@@ -98,7 +98,7 @@ public class ExpenseTrackerCli {
             case "--id" -> isInteger(value);
             case "--description" -> true;
             default -> {
-                System.out.println("flag invalida");
+                System.out.println("Invalid Flag");
                 yield false;
             }
         };
@@ -109,7 +109,7 @@ public class ExpenseTrackerCli {
             boolean isAValidMonth = (Integer.parseInt(value) >= 1 && Integer.parseInt(value) <= 12);
 
             if(!isAValidMonth) {
-                System.out.println("Valor Inválido para mês. Digite um numero entre 1 e 12");
+                System.out.println("Invalid month value. Enter a number between 1 and 12.");
                 return false;
             }
 
@@ -124,7 +124,7 @@ public class ExpenseTrackerCli {
             Double.parseDouble(parseableValue);
             return true;
         } catch (NumberFormatException e) {
-            System.out.println("Erro: O valor de --amount deve ser um número Inteiro.");
+            System.out.println("Error: The --amount value has to be a Integer.");
             return false;
         }
     }
@@ -134,7 +134,7 @@ public class ExpenseTrackerCli {
             Double.parseDouble(parseableValue);
             return true;
         } catch (NumberFormatException e) {
-            System.out.println("Erro: O valor de --amount deve ser um número de Ponto Flutuante.");
+            System.out.println("Error: The --amount value has to be a Double.");
             return false;
         }
     }

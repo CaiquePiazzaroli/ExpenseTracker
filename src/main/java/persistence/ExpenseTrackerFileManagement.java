@@ -26,14 +26,14 @@ public class ExpenseTrackerFileManagement {
             }
 
         } catch (NumberFormatException | IOException e ) {
-            System.out.println("Erro ao Salvar: " + e);
+            System.out.println("Error saving expense: " + e);
         }
     }
 
     public void list() {
         List<Expense> expenses = getExpenseList();
         if (expenses.isEmpty()) {
-            System.out.println("Lista vazia");
+            System.out.println("The expense list is empty.");
         } else {
             System.out.println("   ID  DATE         DESCRIPTION             AMOUNT");
             expenses.forEach(System.out::println);
@@ -47,9 +47,9 @@ public class ExpenseTrackerFileManagement {
 
         if (found) {
             rewriteDatabase(expenses);
-            System.out.printf("Id %d excluido da base de dados com exito!\n", id);
+            System.out.printf("ID %d successfully deleted from the database.!\n", id);
         } else {
-            System.out.printf("O id %d não foi encontrado na base de dados.\n", id);
+            System.out.printf("ID %d was not found in the database.\n", id);
         }
     }
 
@@ -111,7 +111,7 @@ public class ExpenseTrackerFileManagement {
 
             }
         } catch (IOException e) {
-            System.err.println("Falha crítica ao carregar despesas: " + e.getMessage());
+            System.err.println("Critical failure while loading expenses: " + e.getMessage());
         }
 
         return expenseList;
@@ -123,7 +123,7 @@ public class ExpenseTrackerFileManagement {
 
         if (parentDir != null && !parentDir.exists()) {
             if (!parentDir.mkdirs()) {
-                throw new IOException("Não foi possível criar o diretório: " + parentDir.getAbsolutePath());
+                throw new IOException("The directory could not be created.: " + parentDir.getAbsolutePath());
             }
         }
 
